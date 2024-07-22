@@ -1,0 +1,23 @@
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+
+# Typescript
+*.tsbuildinfo
+
+# Build directories
+dist/
+build/
+
+# Environment variables
+.env
+
+# Firebase service account key
+backend/config/fileshub-bf826-firebase-adminsdk-rv7wk-6a54812ec6.json
