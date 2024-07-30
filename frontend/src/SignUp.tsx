@@ -1,78 +1,90 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { TextField, Button, Box, Typography } from '@mui/material';
 
-const Signup = () => {
-  const [nom, setNom] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [cabinetIds, setCabinetIds] = useState<string[]>([]);
-  const navigate = useNavigate();
+const SignUp = () => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3000/utilisateurs', {
-        nom,
-        email,
-        password,
-        cabinetIds
-      });
-      console.log('Utilisateur créé :', response.data);
-      navigate('/login');
-    } catch (error) {
-      console.error('Erreur lors de la création de l\'utilisateur :', error);
-    }
-  };
+    const handleFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFirstName(event.target.value);
+    };
 
-  return (
-    <Container maxWidth="sm">
-      <Box mt={5}>
-        <Typography variant="h4" gutterBottom>
-          Inscription
-        </Typography>
-        <form onSubmit={handleSignup}>
-          <TextField
-            label="Nom"
-            fullWidth
-            margin="normal"
-            value={nom}
-            onChange={(e) => setNom(e.target.value)}
-            required
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <TextField
-            label="Mot de passe"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <TextField
-            label="Cabinet IDs (séparés par des virgules)"
-            fullWidth
-            margin="normal"
-            value={cabinetIds.join(',')}
-            onChange={(e) => setCabinetIds(e.target.value.split(','))}
-          />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            S'inscrire
-          </Button>
-        </form>
-      </Box>
-    </Container>
-  );
-};
+    const handleLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setLastName(event.target.value);
+    };
 
-export default Signup;
+    const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
+    };
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        console.log('First Name:', firstName);
+        console.log('Last Name:', lastName);
+        console.log('Email:', email);
+        console.log('Password:', password);
+    };
+
+    return (
+        <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '50px',
+            }}
+        >
+            <Typography variant="h4" component="h1" gutterBottom>
+                Inscription
+            </Typography>
+            <TextField
+                label="Prénom"
+                variant="outlined"
+                value={firstName}
+                onChange={handleFirstNameChange}
+                sx={{ marginBottom: '20px', width: '300px' }}
+                required
+            />
+            <TextField
+                label="Nom"
+                variant="outlined"
+                value={lastName}
+                onChange={handleLastNameChange}
+                sx={{ marginBottom: '20px', width: '300px' }}
+                required
+            />
+            <TextField
+                label="Email"
+                variant="outlined"
+                type="email"
+                value={email}
+                onChange={handleEmailChange}
+                sx={{ marginBottom: '20px', width: '300px' }}
+                required
+            />
+            <TextField
+                label="Mot de passe"
+                variant="outlined"
+                type="password"
+                value={password}
+                onChange={handlePasswordChange}
+                sx={{ marginBottom: '20px', width: '300px' }}
+                required
+            />
+            <Button type="submit" variant="contained" color="primary" sx={{ width: '300px' }}>
+                S'inscrire
+            </Button>
+        </Box>
+    );
+}
+
+export default SignUp;

@@ -219,7 +219,6 @@ app.post('/cabinets', (req: Request, res: Response) => {
     userIds
   });
 
-  // Mettre à jour chaque utilisateur pour inclure le nouveau cabinet
   userIds.forEach(async (userId) => {
     const userRef = db.ref('utilisateurs/' + userId);
     const snapshot = await userRef.once('value');
