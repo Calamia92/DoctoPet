@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development', 
+  mode: 'development', 
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -27,6 +28,9 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
     static: {
       directory: path.join(__dirname, 'dist'),
     },
