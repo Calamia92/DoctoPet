@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development', 
+  mode: 'development', 
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -30,6 +31,9 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'dist'),
     },
+    static: {
+      directory: path.join(__dirname, 'dist'),
+    },
     compress: true,
     port: 9000
   },
@@ -39,7 +43,7 @@ module.exports = {
     })
   ],
   performance: {
-    hints: 'warning', 
+    hints: false, 
     maxAssetSize: 512000, 
     maxEntrypointSize: 512000 
   }
