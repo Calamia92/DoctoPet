@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography } from '@mui/material';
+import axios from 'axios';
+import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 
-const Register = () => {
+const SignUp = () => {
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
     const handleFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFirstName(event.target.value);
@@ -23,13 +25,21 @@ const Register = () => {
         setPassword(event.target.value);
     };
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        // Logique de soumission ici
-        console.log('First Name:', firstName);
-        console.log('Last Name:', lastName);
-        console.log('Email:', email);
-        console.log('Password:', password);
+        try {
+            const response = await axios.post('http://localhost:3000/utilisateurs', {
+                nom: lastName,
+                prenom: firstName,
+                email,
+                password,
+            });
+            console.log('Utilisateur créé :', response.data);
+            setError(''); 
+        } catch (error) {
+            console.error('Erreur lors de la création de l\'utilisateur :', error);
+            setError('Erreur lors de la création de l\'utilisateur.');
+        }
     };
 
     return (
@@ -47,6 +57,7 @@ const Register = () => {
             <Typography variant="h4" component="h1" gutterBottom>
                 Inscription
             </Typography>
+            {error && <Alert severity="error" sx={{ marginBottom: '20px', width: '300px' }}>{error}</Alert>}
             <TextField
                 label="Prénom"
                 variant="outlined"
@@ -88,4 +99,4 @@ const Register = () => {
     );
 }
 
-export default Register;
+export default SignUp;
