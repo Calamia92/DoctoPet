@@ -18,7 +18,7 @@ const serviceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  databaseURL: 'https://fileshub-bf826.firebaseio.com'
+  databaseURL: 'https://doctopet-54def.europe-west1.firebasedatabase.app/'
 });
 
 const db = admin.firestore();

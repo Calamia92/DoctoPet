@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import bcrypt from 'bcryptjs';
@@ -23,17 +23,28 @@ const serviceAccount = {
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  databaseURL: 'https://YOUR_PROJECT_ID.firebaseio.com'
+  databaseURL: 'https://doctopet-54def.europe-west1.firebasedatabase.app/'
 });
 
 const db = admin.database();
 const app = express();
 const port = 3000;
 
-app.use(cors());
+app.use(cors({ origin: 'http://localhost:9000' }));
 app.use(bodyParser.json());
 
-const verifyToken = (req: Request, res: Response, next: Function) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:9000");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers['authorization'];
   if (!token) return res.status(403).send('Token is required');
 
@@ -50,9 +61,9 @@ app.get('/', (req: Request, res: Response) => {
 
 interface Utilisateur {
   nom: string;
+  prenom: string;
   email: string;
   password: string;
-  cabinetIds: string[];
 }
 
 interface Animal {
@@ -68,30 +79,18 @@ interface Cabinet {
 }
 
 app.post('/utilisateurs', async (req: Request, res: Response) => {
-  const { nom, email, password, cabinetIds }: Utilisateur = req.body;
+  const { nom, prenom, email, password }: Utilisateur = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   const newUserRef = db.ref('utilisateurs').push();
   await newUserRef.set({
     nom,
+    prenom,
     email,
-    password: hashedPassword,
-    cabinetIds
+    password: hashedPassword
   });
 
-  cabinetIds.forEach(async (cabinetId) => {
-    const cabinetRef = db.ref('cabinets/' + cabinetId);
-    const snapshot = await cabinetRef.once('value');
-    const cabinetData = snapshot.val();
-
-    if (cabinetData) {
-      const userIds = cabinetData.userIds || [];
-      userIds.push(newUserRef.key);
-      await cabinetRef.update({ userIds });
-    }
-  });
-
-  res.status(201).send({ id: newUserRef.key, nom, email, cabinetIds });
+  res.status(201).send({ id: newUserRef.key, nom, prenom, email });
 });
 
 app.get('/utilisateurs', (req: Request, res: Response) => {
@@ -107,64 +106,20 @@ app.get('/utilisateurs/:id', (req: Request, res: Response) => {
 });
 
 app.put('/utilisateurs/:id', async (req: Request, res: Response) => {
-  const { nom, email, password, cabinetIds }: Utilisateur = req.body;
+  const { nom, prenom, email, password }: Utilisateur = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   await db.ref('utilisateurs/' + req.params.id).update({
     nom,
+    prenom,
     email,
-    password: hashedPassword,
-    cabinetIds
+    password: hashedPassword
   });
 
-  const userRef = db.ref('utilisateurs/' + req.params.id);
-  const userSnapshot = await userRef.once('value');
-  const userData = userSnapshot.val();
-
-  userData.cabinetIds.forEach(async (cabinetId: string) => {
-    const cabinetRef = db.ref('cabinets/' + cabinetId);
-    const snapshot = await cabinetRef.once('value');
-    const cabinetData = snapshot.val();
-
-    if (cabinetData) {
-      const userIds = cabinetData.userIds || [];
-      const updatedUserIds = userIds.filter((id: string) => id !== req.params.id);
-      await cabinetRef.update({ userIds: updatedUserIds });
-    }
-  });
-
-  cabinetIds.forEach(async (cabinetId) => {
-    const cabinetRef = db.ref('cabinets/' + cabinetId);
-    const snapshot = await cabinetRef.once('value');
-    const cabinetData = snapshot.val();
-
-    if (cabinetData) {
-      const userIds = cabinetData.userIds || [];
-      userIds.push(req.params.id);
-      await cabinetRef.update({ userIds });
-    }
-  });
-
-  res.status(200).send({ id: req.params.id, nom, email, cabinetIds });
+  res.status(200).send({ id: req.params.id, nom, prenom, email });
 });
 
 app.delete('/utilisateurs/:id', async (req: Request, res: Response) => {
-  const userRef = db.ref('utilisateurs/' + req.params.id);
-  const userSnapshot = await userRef.once('value');
-  const userData = userSnapshot.val();
-
-  userData.cabinetIds.forEach(async (cabinetId: string) => {
-    const cabinetRef = db.ref('cabinets/' + cabinetId);
-    const snapshot = await cabinetRef.once('value');
-    const cabinetData = snapshot.val();
-
-    if (cabinetData) {
-      const userIds = cabinetData.userIds || [];
-      const updatedUserIds = userIds.filter((id: string) => id !== req.params.id);
-      await cabinetRef.update({ userIds: updatedUserIds });
-    }
-  });
-
   await db.ref('utilisateurs/' + req.params.id).remove();
   res.status(200).send({ id: req.params.id });
 });
@@ -319,15 +274,17 @@ app.post('/login', (req: Request, res: Response) => {
 
       if (passwordIsValid) {
         const token = jwt.sign({ id: userId }, 'SECRET_KEY', {
-          expiresIn: 86400 // 24 hours
+          expiresIn: 86400 
         });
         res.status(200).send({ auth: true, token: token });
       } else {
-        res.status(401).send({ auth: false, token: null });
+        res.status(401).send({ auth: false, message: 'Invalid password' });
       }
     } else {
-      res.status(404).send('No user found.');
+      res.status(404).send({ auth: false, message: 'User not found' });
     }
+  }).catch((error) => {
+    res.status(500).send({ message: 'Server error', error });
   });
 });
 
