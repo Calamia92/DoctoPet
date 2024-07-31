@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+const Login: React.FC = () => {
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value);
@@ -25,6 +27,13 @@ const Login = () => {
             });
             console.log('User logged in:', response.data);
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('role', response.data.role);
+
+            if (response.data.role === 'admin') {
+                navigate('/admin-dashboard');
+            } else {
+                navigate('/');
+            }
         } catch (error) {
             console.error('Login error:', error);
             setError('Erreur lors de la connexion. Veuillez vérifier vos identifiants.');

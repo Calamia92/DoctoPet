@@ -55,6 +55,19 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId;
+  const userRef = db.ref('utilisateurs/' + userId);
+  const snapshot = await userRef.once('value');
+  const userData = snapshot.val();
+
+  if (userData && userData.isAdmin) {
+    next();
+  } else {
+    res.status(403).send('Access denied. Admins only.');
+  }
+};
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to FilesHub Backend');
 });
@@ -64,6 +77,7 @@ interface Utilisateur {
   prenom: string;
   email: string;
   password: string;
+  isAdmin?: boolean; 
 }
 
 interface Animal {
@@ -79,7 +93,7 @@ interface Cabinet {
 }
 
 app.post('/utilisateurs', async (req: Request, res: Response) => {
-  const { nom, prenom, email, password }: Utilisateur = req.body;
+  const { nom, prenom, email, password, isAdmin = false }: Utilisateur = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   const newUserRef = db.ref('utilisateurs').push();
@@ -87,10 +101,11 @@ app.post('/utilisateurs', async (req: Request, res: Response) => {
     nom,
     prenom,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    isAdmin
   });
 
-  res.status(201).send({ id: newUserRef.key, nom, prenom, email });
+  res.status(201).send({ id: newUserRef.key, nom, prenom, email, isAdmin });
 });
 
 app.get('/utilisateurs', (req: Request, res: Response) => {
@@ -106,17 +121,18 @@ app.get('/utilisateurs/:id', (req: Request, res: Response) => {
 });
 
 app.put('/utilisateurs/:id', async (req: Request, res: Response) => {
-  const { nom, prenom, email, password }: Utilisateur = req.body;
+  const { nom, prenom, email, password, isAdmin = false }: Utilisateur = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
   await db.ref('utilisateurs/' + req.params.id).update({
     nom,
     prenom,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    isAdmin
   });
 
-  res.status(200).send({ id: req.params.id, nom, prenom, email });
+  res.status(200).send({ id: req.params.id, nom, prenom, email, isAdmin });
 });
 
 app.delete('/utilisateurs/:id', async (req: Request, res: Response) => {
@@ -124,7 +140,7 @@ app.delete('/utilisateurs/:id', async (req: Request, res: Response) => {
   res.status(200).send({ id: req.params.id });
 });
 
-app.post('/animaux', (req: Request, res: Response) => {
+app.post('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   const { nom, type, proprietaireId }: Animal = req.body;
 
   const newAnimalRef = db.ref('animaux').push();
@@ -136,19 +152,19 @@ app.post('/animaux', (req: Request, res: Response) => {
   res.status(201).send({ id: newAnimalRef.key, nom, type, proprietaireId });
 });
 
-app.get('/animaux', (req: Request, res: Response) => {
+app.get('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('animaux').once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
   });
 });
 
-app.get('/animaux/:id', (req: Request, res: Response) => {
+app.get('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('animaux/' + req.params.id).once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
   });
 });
 
-app.put('/animaux/:id', (req: Request, res: Response) => {
+app.put('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   const { nom, type, proprietaireId }: Animal = req.body;
 
   db.ref('animaux/' + req.params.id).update({
@@ -159,12 +175,12 @@ app.put('/animaux/:id', (req: Request, res: Response) => {
   res.status(200).send({ id: req.params.id, nom, type, proprietaireId });
 });
 
-app.delete('/animaux/:id', (req: Request, res: Response) => {
+app.delete('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('animaux/' + req.params.id).remove();
   res.status(200).send({ id: req.params.id });
 });
 
-app.post('/cabinets', (req: Request, res: Response) => {
+app.post('/cabinets', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   const { nom, adresse, userIds }: Cabinet = req.body;
 
   const newCabinetRef = db.ref('cabinets').push();
@@ -189,19 +205,19 @@ app.post('/cabinets', (req: Request, res: Response) => {
   res.status(201).send({ id: newCabinetRef.key, nom, adresse, userIds });
 });
 
-app.get('/cabinets', (req: Request, res: Response) => {
+app.get('/cabinets', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('cabinets').once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
   });
 });
 
-app.get('/cabinets/:id', (req: Request, res: Response) => {
+app.get('/cabinets/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('cabinets/' + req.params.id).once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
   });
 });
 
-app.put('/cabinets/:id', async (req: Request, res: Response) => {
+app.put('/cabinets/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
   const { nom, adresse, userIds }: Cabinet = req.body;
 
   await db.ref('cabinets/' + req.params.id).update({
@@ -241,7 +257,7 @@ app.put('/cabinets/:id', async (req: Request, res: Response) => {
   res.status(200).send({ id: req.params.id, nom, adresse, userIds });
 });
 
-app.delete('/cabinets/:id', async (req: Request, res: Response) => {
+app.delete('/cabinets/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
   const cabinetRef = db.ref('cabinets/' + req.params.id);
   const cabinetSnapshot = await cabinetRef.once('value');
   const cabinetData = cabinetSnapshot.val();
@@ -276,12 +292,40 @@ app.post('/login', (req: Request, res: Response) => {
         const token = jwt.sign({ id: userId }, 'SECRET_KEY', {
           expiresIn: 86400 
         });
-        res.status(200).send({ auth: true, token: token });
+        const role = user.isAdmin ? 'admin' : 'user';
+        res.status(200).send({ auth: true, token: token, role: role });
       } else {
         res.status(401).send({ auth: false, message: 'Invalid password' });
       }
     } else {
       res.status(404).send({ auth: false, message: 'User not found' });
+    }
+  }).catch((error) => {
+    res.status(500).send({ message: 'Server error', error });
+  });
+});
+
+
+app.post('/admin-dashboard', (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  db.ref('utilisateurs').orderByChild('email').equalTo(email).once('value', (snapshot) => {
+    const userData = snapshot.val();
+    if (userData) {
+      const userId = Object.keys(userData)[0];
+      const user = userData[userId];
+      const passwordIsValid = bcrypt.compareSync(password, user.password);
+
+      if (passwordIsValid && user.isAdmin) {
+        const token = jwt.sign({ id: userId, isAdmin: true }, 'SECRET_KEY', {
+          expiresIn: 86400 
+        });
+        res.status(200).send({ auth: true, token: token });
+      } else {
+        res.status(401).send({ auth: false, message: 'Invalid password or not an admin' });
+      }
+    } else {
+      res.status(404).send({ auth: false, message: 'Admin not found' });
     }
   }).catch((error) => {
     res.status(500).send({ message: 'Server error', error });
