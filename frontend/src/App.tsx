@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Layout from './Layout';
 import Appointment from './Apointement';
 import Login from './Login';
-import Signup from './Signup';
 import AdminDashboard from './AdminDashboard';
+import SignUp from './SignUp';
+import Request from './components/Request';
+import Profile from './components/Profile';
 
 const PrivateRoute: React.FC<{ children: JSX.Element, isAdmin?: boolean }> = ({ children, isAdmin }) => {
   const token = localStorage.getItem('token');
@@ -20,9 +22,7 @@ const PrivateRoute: React.FC<{ children: JSX.Element, isAdmin?: boolean }> = ({ 
 
   return children;
 };
-import SignUp from './SignUp';
-import Request from './components/Request';
-import Profile from './components/Profile';
+
 
 const App: React.FC = () => {
   return (
