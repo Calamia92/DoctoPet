@@ -45,10 +45,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers['authorization'];
+  const authHeader = req.headers['authorization'];
+  if (!authHeader) return res.status(403).send('Token is required');
+
+  const token = authHeader.split(' ')[1];
   if (!token) return res.status(403).send('Token is required');
 
-  jwt.verify(token, 'SECRET_KEY', (err: any, decoded: any) => {
+  jwt.verify(token, process.env.SECRET_KEY as string, (err: any, decoded: any) => {
     if (err) return res.status(500).send('Invalid Token');
     req.body.userId = decoded.id;
     next();
@@ -148,19 +151,28 @@ app.post('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => 
     nom,
     type,
     proprietaireId
+  }, (error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error creating animal', error });
+    } else {
+      res.status(201).send({ id: newAnimalRef.key, nom, type, proprietaireId });
+    }
   });
-  res.status(201).send({ id: newAnimalRef.key, nom, type, proprietaireId });
 });
 
 app.get('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('animaux').once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching animals', error });
   });
 });
 
 app.get('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
   db.ref('animaux/' + req.params.id).once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching animal', error });
   });
 });
 
@@ -171,13 +183,23 @@ app.put('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) 
     nom,
     type,
     proprietaireId
+  }, (error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error updating animal', error });
+    } else {
+      res.status(200).send({ id: req.params.id, nom, type, proprietaireId });
+    }
   });
-  res.status(200).send({ id: req.params.id, nom, type, proprietaireId });
 });
 
 app.delete('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
-  db.ref('animaux/' + req.params.id).remove();
-  res.status(200).send({ id: req.params.id });
+  db.ref('animaux/' + req.params.id).remove((error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error deleting animal', error });
+    } else {
+      res.status(200).send({ id: req.params.id });
+    }
+  });
 });
 
 app.post('/cabinets', verifyToken, verifyAdmin, (req: Request, res: Response) => {
@@ -289,7 +311,7 @@ app.post('/login', (req: Request, res: Response) => {
       const passwordIsValid = bcrypt.compareSync(password, user.password);
 
       if (passwordIsValid) {
-        const token = jwt.sign({ id: userId }, 'SECRET_KEY', {
+        const token = jwt.sign({ id: userId }, process.env.SECRET_KEY as string, {
           expiresIn: 86400 
         });
         const role = user.isAdmin ? 'admin' : 'user';
@@ -317,7 +339,7 @@ app.post('/admin-dashboard', (req: Request, res: Response) => {
       const passwordIsValid = bcrypt.compareSync(password, user.password);
 
       if (passwordIsValid && user.isAdmin) {
-        const token = jwt.sign({ id: userId, isAdmin: true }, 'SECRET_KEY', {
+        const token = jwt.sign({ id: userId, isAdmin: true }, process.env.SECRET_KEY as string, {
           expiresIn: 86400 
         });
         res.status(200).send({ auth: true, token: token });

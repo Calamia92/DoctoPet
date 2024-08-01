@@ -10,16 +10,19 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Button from "@mui/material/Button";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import HomeIcon from "@mui/icons-material/Home";
 import FolderIcon from "@mui/icons-material/Folder";
+import PetsIcon from "@mui/icons-material/Pets";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
 
 const drawerWidth = 240;
 
@@ -72,7 +75,7 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  backgroundColor: theme.palette.primary.main,
+  backgroundColor: "#4CAF50",
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -90,7 +93,7 @@ const Drawer = styled(MuiDrawer, {
     ...closedMixin(theme),
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
-  backgroundColor: theme.palette.secondary.main,
+  backgroundColor: "#A5D6A7",
 }));
 
 interface LayoutProps {
@@ -133,13 +136,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
+          <Avatar src="../public/assets/logo.png" alt="Logo" sx={{ height: 40, width: 40, marginRight: 2 }} />
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            FilesHub
+            DoctoPet
           </Typography>
-          {isAuthenticated && (
-            <Button color="inherit" onClick={handleLogout}>
-              Logout
-            </Button>
+          {isAuthenticated ? (
+            <>
+              <IconButton color="inherit" component={Link} to="/profile">
+                <AccountCircleIcon />
+              </IconButton>
+              <IconButton color="inherit" onClick={handleLogout}>
+                <LogoutIcon />
+              </IconButton>
+            </>
+          ) : (
+            <>
+              <Button color="inherit" component={Link} to="/login">
+                Se Connecter
+              </Button>
+              <Button color="inherit" component={Link} to="/signup">
+                S'inscrire
+              </Button>
+            </>
           )}
         </Toolbar>
       </AppBar>
@@ -157,9 +175,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <List>
           <ListItem button component={Link} to="/">
             <ListItemIcon>
-              <InboxIcon />
+              <HomeIcon />
             </ListItemIcon>
             <ListItemText primary="Home" />
+          </ListItem>
+          <ListItem button component={Link} to="/appointments">
+            <ListItemIcon>
+              <PetsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Appointments" />
           </ListItem>
           <ListItem button component={Link} to="/file-manager">
             <ListItemIcon>
@@ -167,17 +191,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </ListItemIcon>
             <ListItemText primary="File Manager" />
           </ListItem>
-        </List>
-        <Divider />
-        <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
         </List>
       </Drawer>
       <Box

@@ -4,7 +4,7 @@ import Layout from './Layout';
 import Appointment from './Apointement';
 import Login from './Login';
 import AdminDashboard from './AdminDashboard';
-import SignUp from './SignUp';
+import SignUp from './Signup';
 import Request from './components/Request';
 import Profile from './components/Profile';
 
