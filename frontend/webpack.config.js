@@ -2,8 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development', 
-  mode: 'development', 
+  mode: 'development',
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -23,16 +22,17 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       }
     ]
   },
   devServer: {
     historyApiFallback: true,
     static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, 'public'), 
     },
     compress: true,
     port: 9000
