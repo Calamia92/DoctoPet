@@ -16,9 +16,13 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import FolderIcon from '@mui/icons-material/Folder';
+import LocationOnTwoToneIcon from '@mui/icons-material/LocationOnTwoTone';
+import DevicesTwoToneIcon from '@mui/icons-material/DevicesTwoTone';
+import MapsHomeWorkTwoToneIcon from '@mui/icons-material/MapsHomeWorkTwoTone';
 
 const drawerWidth = 240;
 
@@ -109,9 +113,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar open={open}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -122,11 +126,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               marginRight: 5,
               ...(open && { display: 'none' }),
             }}
-          >
+            >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            FilesHub
+            DocPet
           </Typography>
         </Toolbar>
       </AppBar>
@@ -140,19 +144,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <List>
           <ListItem button component={Link} to="/">
             <ListItemIcon>
-              <InboxIcon />
+              <HomeRoundedIcon />
             </ListItemIcon>
-            <ListItemText primary="Home" />
+            <ListItemText primary="Accueil" />
           </ListItem>
           <ListItem button component={Link} to="/file-manager">
             <ListItemIcon>
               <FolderIcon />
             </ListItemIcon>
-            <ListItemText primary="File Manager" />
+            <ListItemText primary="Documents" />
           </ListItem>
         </List>
         <Divider />
-        <List>
+        {/* <List>
           {['All mail', 'Trash', 'Spam'].map((text, index) => (
             <ListItem button key={text}>
               <ListItemIcon>
@@ -161,9 +165,32 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <ListItemText primary={text} />
             </ListItem>
           ))}
+        </List> */}
+        <List>
+          <ListItem button component={Link} to="/sur-place">
+            <ListItemIcon>
+              <LocationOnTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="Sur Place" />
+          </ListItem>
+          <ListItem button component={Link} to="/en-ligne">
+            <ListItemIcon>
+              <DevicesTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="En Ligne" />
+          </ListItem>
+          <ListItem button component={Link} to="/a-domicile">
+            <ListItemIcon>
+              <MapsHomeWorkTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="A Domicile" />
+          </ListItem>
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: theme.palette.background.default }}>
+      {/* <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <div style={{ backgroundColor: 'red', width: '100%', height: '10vh', }}> heyyyyyyyyyyyyy </div>
+      </Box> */}
         <DrawerHeader />
         {children}
       </Box>

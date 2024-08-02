@@ -2,7 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development', 
+  mode: 'development',
   entry: './src/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -10,7 +10,7 @@ module.exports = {
     publicPath: '/'
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   module: {
     rules: [
@@ -22,6 +22,19 @@ module.exports = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.(jpg|jpeg|png|gif)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[hash:8].[ext]',
+              outputPath: 'images',
+              publicPath: 'images'
+            }
+          }
+        ]
       }
     ]
   },
@@ -39,8 +52,8 @@ module.exports = {
     })
   ],
   performance: {
-    hints: 'warning', 
-    maxAssetSize: 512000, 
-    maxEntrypointSize: 512000 
+    hints: false,
+    maxAssetSize: 512000,
+    maxEntrypointSize: 512000
   }
 };

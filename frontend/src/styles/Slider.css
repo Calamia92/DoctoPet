@@ -1,0 +1,145 @@
+.sliderMainContainer{
+  width: 100%;
+  height: 250px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* background-color: #d78b9f; */
+}
+.sliderContainer {
+  width: 60%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  /* background-color: #3d2b2b; */
+  background: linear-gradient(263deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  /* Background gradient for a subtle bevel */
+  box-shadow: 
+  /* Inner shadow for depth */
+  inset 2px 2px 5px rgba(0, 0, 0, 0.3),  
+  /* Inner highlight for bevel effect */
+  inset -2px -2px 5px rgba(255, 255, 255, 0.1), 
+  /* Outer shadow for overall depth */
+  2px 2px 10px rgba(0, 0, 0, 0.5); 
+}
+/* .sliderContainer {
+  width: 60%;
+  height: 100%; 
+  background-color: #3d2b2b;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+} */
+
+.sliderContainer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  /* Highlight gradient */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); 
+}
+
+.secondSliderContainer {
+  width: 23%;
+  height: 100%; 
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  /* position: relative; */
+  background-color: #3d2b2b;
+}
+
+.sliderList {
+  display: flex;
+  justify-content: space-around;
+  animation: slide 60s linear infinite;
+}
+.secondSliderList {
+  display: flex;
+  justify-content: space-around;
+  animation: slide 60s linear infinite;
+}
+  
+  @keyframes slide {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  
+  .logocards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 200px; 
+    height: 200px; 
+    padding: 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    /* Optional: Add border or shadow */
+    border: 1px solid rgba(172, 172, 172, 0.2);
+    border-radius: 12px;
+    /* box-shadow: 0px 6px 8px rgba(81, 81, 81, 0.1); */
+    box-shadow: 0px 6px 8px rgba(82, 4, 4, 0.193);
+    margin-left: 16px;
+  }
+  .stallionLogocards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 200px; 
+    height: 200px; 
+    padding: 10px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    /* Optional: Add border or shadow */
+    border: 1px solid rgba(172, 172, 172, 0.2);
+    border-radius: 12px;
+    /* box-shadow: 0px 6px 8px rgba(81, 81, 81, 0.1); */
+    box-shadow: 0px 6px 8px rgba(82, 4, 4, 0.193);
+    margin-left: 16px;
+  }
+  /* .stallionLogo{
+    width: 100%;
+  } */
+  
+  .logo img {
+    max-width: 100%;
+    max-height: 100%; /* This will maintain the aspect ratio */
+  }
+  
+  .sliderContainer:hover .sliderList {
+    animation-play-state: paused; 
+  }
+  
+  /* Gradient edges */
+  .sliderContainer::before, .sliderContainer::after {
+    width: 10%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    content: "";
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  .sliderContainer::before {
+    width: 5%;
+    left: 0;
+    background-color: #3F3E3E;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5));
+  }
+  
+  .sliderContainer::after {
+    width: 5%;
+    right: 0;
+  }
+  
