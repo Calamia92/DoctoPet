@@ -3,7 +3,12 @@ import axios from 'axios';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-const Login: React.FC = () => {
+interface LoginProps {
+    marginTop?: string | number;
+    toggleForm?: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ marginTop = '30vh', toggleForm }) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -16,6 +21,13 @@ const Login: React.FC = () => {
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
+
+    const handleSignUpRedirect = () => {
+        if (toggleForm) {
+            toggleForm();
+        }
+    };
+    
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -56,7 +68,7 @@ const Login: React.FC = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: '50px',
+                marginTop: marginTop,
             }}
         >
             <Typography variant="h4" component="h1" gutterBottom>
@@ -81,9 +93,12 @@ const Login: React.FC = () => {
                 required
             />
             {error && <Typography color="error">{error}</Typography>}
-            <Button type="submit" variant="contained" color="primary" sx={{ width: '300px' }}>
+            <Button type="submit" variant="contained" color="primary" sx={{ width: '300px', padding: '12px' }}>
                 Se connecter
             </Button>
+            <div style={{marginTop: '20px', fontSize: '1.1rem'}}>
+                Pas de Compte ? <Button onClick={handleSignUpRedirect} sx={{ textTransform: 'none', fontSize: '1.1rem', marginLeft: '6px' }}>S'inscrire</Button>
+            </div>
         </Box>
     );
 }

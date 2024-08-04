@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 
-const SignUp = () => {
+
+interface LoginProps {
+    marginTop?: string | number;
+    toggleForm?: () => void;
+}
+
+const SignUp: React.FC<LoginProps> = ({ marginTop = '20vh', toggleForm }) => {
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -51,7 +58,7 @@ const SignUp = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginTop: '50px',
+                marginTop: marginTop,
             }}
         >
             <Typography variant="h4" component="h1" gutterBottom>
@@ -92,9 +99,12 @@ const SignUp = () => {
                 sx={{ marginBottom: '20px', width: '300px' }}
                 required
             />
-            <Button type="submit" variant="contained" color="primary" sx={{ width: '300px' }}>
+            <Button type="submit" variant="contained" color="primary" sx={{ width: '300px', marginBottom: '20px' }}>
                 S'inscrire
             </Button>
+            <div style={{ marginTop: '20px', fontSize: '1.1rem' }}>
+                Déjà un compte ? <Button onClick={toggleForm} sx={{ textTransform: 'none', fontSize: '1.1rem', marginLeft: '6px' }}>Se connecter</Button>
+            </div>
         </Box>
     );
 }

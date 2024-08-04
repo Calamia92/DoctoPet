@@ -1,21 +1,27 @@
-import React, { useState, ReactNode } from "react";
-import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import { Link, useNavigate } from "react-router-dom";
-import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import React, { useState, ReactNode } from 'react';
+import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
+import { Link, useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import MuiDrawer from '@mui/material/Drawer';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
+import LocationOnTwoToneIcon from '@mui/icons-material/LocationOnTwoTone';
+import DevicesTwoToneIcon from '@mui/icons-material/DevicesTwoTone';
+import MapsHomeWorkTwoToneIcon from '@mui/icons-material/MapsHomeWorkTwoTone';
 import HomeIcon from "@mui/icons-material/Home";
 import FolderIcon from "@mui/icons-material/Folder";
 import PetsIcon from "@mui/icons-material/Pets";
@@ -120,9 +126,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: 'flex', flexDirection: 'row' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar open={open}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -133,7 +139,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               marginRight: 5,
               ...(open && { display: "none" }),
             }}
-          >
+            >
             <MenuIcon />
           </IconButton>
           <Avatar src="./assets/dog.jpeg" alt="Logo" sx={{ height: 40, width: 40, marginRight: 2 }} />
@@ -177,7 +183,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <ListItemIcon>
               <HomeIcon />  
             </ListItemIcon>
-            <ListItemText primary="Home" />
+            <ListItemText primary="Accueil" />
           </ListItem>
           <ListItem button component={Link} to="/appointments">
             <ListItemIcon>
@@ -189,18 +195,45 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <ListItemIcon>
               <FolderIcon />
             </ListItemIcon>
-            <ListItemText primary="File Manager" />
+            <ListItemText primary="Documents" />
+          </ListItem>
+        </List>
+        <Divider />
+        {/* <List>
+          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+            <ListItem button key={text}>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List> */}
+        <List>
+          <ListItem button component={Link} to="/sur-place">
+            <ListItemIcon>
+              <LocationOnTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="Sur Place" />
+          </ListItem>
+          <ListItem button component={Link} to="/en-ligne">
+            <ListItemIcon>
+              <DevicesTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="En Ligne" />
+          </ListItem>
+          <ListItem button component={Link} to="/a-domicile">
+            <ListItemIcon>
+              <MapsHomeWorkTwoToneIcon/>
+            </ListItemIcon>
+            <ListItemText primary="A Domicile" />
           </ListItem>
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          backgroundColor: theme.palette.background.default,
-        }}
-      >
+      <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: theme.palette.background.default }}>
+      {/* <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <div style={{ backgroundColor: 'red', width: '100%', height: '10vh', }}> heyyyyyyyyyyyyy </div>
+      </Box> */}
         <DrawerHeader />
         {children}
       </Box>

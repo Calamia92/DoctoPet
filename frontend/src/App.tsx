@@ -1,12 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Layout from './Layout';
+import HomePage from './components/HomePage';
+import SearchPage from './components/SearchPage';
+import SurPlacePage from './components/SurPlacePage'; 
+import EnLignePage from './components/EnLignePage';
+import ADomicilePage from './components/ADomicilePage';
 import Appointment from './Apointement';
 import Login from './Login';
 import AdminDashboard from './AdminDashboard';
-import SignUp from './Signup';
+import SignUp from './SignUp';
 import Request from './components/Request';
 import Profile from './components/Profile';
+import Urgence from './components/Urgence';
 
 const PrivateRoute: React.FC<{ children: JSX.Element, isAdmin?: boolean }> = ({ children, isAdmin }) => {
   const token = localStorage.getItem('token');
@@ -26,14 +32,16 @@ const PrivateRoute: React.FC<{ children: JSX.Element, isAdmin?: boolean }> = ({ 
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Layout>
+    <>
+      <Router>
         <Routes>
+          <Route path="/" element={<HomePage/>} />
           <Route path="/signup" element={<SignUp/>} />
-          <Route path="/apointements" element={<Appointment />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/apointements" element={<Appointment />} />
           <Route path="/request" element={<Request />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/urgence" element={<Urgence />} />
           <Route path="/admin-dashboard" element={
             <PrivateRoute isAdmin={true}>
               <AdminDashboard />
@@ -44,10 +52,22 @@ const App: React.FC = () => {
               <Appointment />
             </PrivateRoute>
           } />
-          <Route path="/" element={<div>Home Page</div>} />
+          <Route
+            path="*"
+            element={
+                <Layout>
+                <Routes>
+                  {/* <Route path="/file-manager" element={<FileManager />} /> */}
+                  <Route path="/sur-place" element={<SurPlacePage />} />
+                  <Route path="/en-ligne" element={<EnLignePage />} />
+                  <Route path="/a-domicile" element={<ADomicilePage />} />
+                </Routes>
+              </Layout>
+            }
+          />
         </Routes>
-      </Layout>
-    </Router>
+      </Router>
+    </>
   );
 };
 

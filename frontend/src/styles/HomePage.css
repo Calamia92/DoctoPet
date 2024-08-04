@@ -1,0 +1,221 @@
+.mainContainer {
+    width: 100%;
+    /* background-color: #F8F9FC; */
+    /* background-color: #F4FEFF; */
+    background-color: #fdfdfd;
+}
+
+.backgroundBox {
+    width: 110%;
+    height: 75vh;
+    background-image: url('../assets/vet_bg.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: -20px;
+}
+
+.styledBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 20px;
+    background-color: #E3ECF380;
+    padding-top: 20px;
+}
+
+.title1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #20293A;
+    margin: 0;
+}
+.title2 {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #20293A;
+    margin: 0px 0px 22px 0px;
+}
+
+.description {
+    width: 100%;
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+    text-align: center;
+    color: #515151;
+}
+
+.startButton {
+    background-color: #007BFF;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
+    margin-top: 10px;
+    text-transform: none;
+}
+
+.startButton:hover {
+    background-color: #0056b3;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.offersRedirection {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4rem;
+    background-color: rgba(255, 253, 247, 0.218);
+    /* background-color: rgb(223, 115, 79); */
+    padding: 26px;
+}
+
+.firstCard {
+    width: 220px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5b5b5b;
+    padding: 12px;
+    border-radius: 28px 0px 0px 28px;
+    background-color: #e8b5765c;
+}
+.firstCard:hover {
+    background-color: #e8b576a9;;
+    cursor: pointer;
+}
+
+.middleCard {
+    width: 220px;
+    background-color: #e8b5765c;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5b5b5b;
+    padding: 12px;
+    border-right: 1px solid rgba(123, 119, 109, 0.168);
+    border-left: 1px solid rgba(109, 113, 123, 0.168);
+}
+.middleCard:hover {
+    background-color: #e8b576a9;
+    cursor: pointer;
+}
+
+.lastCard {
+    width: 220px;
+    background-color: #e8b5765c;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5b5b5b;
+    padding: 12px;
+    border-radius: 0px 28px 28px 0px;
+}
+
+.lastCard:hover {
+    background-color: #e8b576a9;
+    cursor: pointer;
+}
+
+/* --------- */
+.icons > img{
+    width: 30px;
+    margin-left: 8px;
+}
+
+.dummyBox{
+    width: 100%;
+    height: 20vh;
+    /* background-color: #dcc5c5; */
+}
+
+.engagementQualiteContainer{
+    width: 100%;
+    margin-bottom: 82px;
+}
+.engagementQualiteTitle{
+    width: 100%;
+    font-size: 2.5rem;
+    color: #353535;
+    text-align: center;
+    margin-top: 72px;
+    margin-bottom: 72px;
+    /* font-family: 'Popin, sans serif'; */
+}
+
+.engagementQualite{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    /* background-color: #eab2b2; */
+    
+}
+.engagementQualite > div{
+    width: 24%;
+    height: 20rem;
+    padding: 26px;
+    border-radius: 12px;
+    background-color: #F8F9FC;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.engagementQualite > div > span > img{
+    width: 50px;
+    margin-bottom: 18px;
+}
+.engagementQualite > div > h3{
+    font-size: 1.8rem;
+    margin: 0;
+    color: #353535;
+}
+.engagementQualite > div > p{
+    width: 90%;
+    font-size: 1.2rem;
+    color: #585858;
+    margin: 8px 0px 16px 0px;
+}
+
+.carouselContainer{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 0px;
+    background-color: #F5F9FF;
+}
+.carouselContainer > h2{
+    font-size: 2.5rem;
+    color: #353535;
+    padding: 0;
+}
+.carousel{
+    width: 100%;
+    height: 60vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    background-color: #F5F9FF;
+}
