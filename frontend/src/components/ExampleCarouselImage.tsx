@@ -6,7 +6,7 @@ interface ExampleCarouselImageProps {
 }
 
 const ExampleCarouselImage: React.FC<ExampleCarouselImageProps> = ({ src, alt }) => {
-  return <img src={src} alt={alt} style={{ width: '800px', height: 'auto' }} />;
+  return <img src={src} alt={alt} style={{ width: '800px', height: 'auto', }} />;
 };
 
 export default ExampleCarouselImage;

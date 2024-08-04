@@ -34,16 +34,14 @@ const Slider: React.FC<SliderProps> = React.memo(({ logos }) => {
           </div>
     
           {/* Second Slider */}
-          <div className="secondSliderContainer">
+          {/* <div className="secondSliderContainer">
             <div className="secondSliderList">
               {logos.map((logo, index) => (
                 <div key={`logo-${logo.id || index}`} className="stallionLogocards">
                   <img
                     src="/logo.png"
                     alt="Stallion Signs Logo"
-                    width={53}
-                    height={78}
-                    style={{ display: 'block' }} // Adjust styles as needed
+                    style={{ width: '53px', height: 'auto', display: 'block' }} 
                   />
                 </div>
               ))}
@@ -54,12 +52,12 @@ const Slider: React.FC<SliderProps> = React.memo(({ logos }) => {
                     alt="Stallion Signs Logo"
                     width={1}
                     height={1}
-                    style={{ display: 'block' }} // Adjust styles as needed
+                    style={{ display: 'block' }} 
                   />
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
         </div>
       );
     });

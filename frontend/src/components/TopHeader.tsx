@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { Typography, Box } from '@mui/material';
 import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import Logo from '../assets/Logo.png';
+import BasicModal from './BasicModal';
+
 
 const TopHeader: React.FC = () => {
+
+  const [isHoveredUrgence, setIsHoveredUrgence] = useState<boolean>(false);
+  const navigate = useNavigate(); 
+
   const Title = styled(Typography)({
     width: '70%',
     display: 'flex', 
@@ -23,19 +30,13 @@ const TopHeader: React.FC = () => {
     zIndex: 1,
   });
 
-  const handleSearch = (query: string) => {
-    console.log(`Searching for: ${query}`);
-  };
+  // const handleSearch = (query: string) => {
+  //   console.log(`Searching for: ${query}`);
+  // };
 
-  const [isHoveredConnexion, setIsHoveredConnexion] = useState<boolean>(false);
-  const [isHoveredUrgence, setIsHoveredUrgence] = useState<boolean>(false);
-
-  const handleConnexion = () => {
-    console.log('Connexion button clicked');
-  };
 
   const handleUrgence = () => {
-    console.log('Urgence button clicked');
+    navigate('/urgence')
   };
 
   return (
@@ -49,29 +50,12 @@ const TopHeader: React.FC = () => {
       }}>
         <img 
           src={Logo} alt="Logo" 
-          style={{ width: '130px', height: '130px', objectFit: 'cover', marginLeft: '30px' }} 
+          style={{ width: '130px', height: '130px', objectFit: 'cover', marginLeft: '30px', marginTop: '12px' }} 
         />
-        <Title variant="h1"> DocPet </Title>
+        <Title variant="h1"> DoctoPet </Title>
         {/* <SearchBar onSearch={handleSearch}/> */}
         <div style={{ width: '14%', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' , backgroundColor: 'white', }}>
-          <button
-            onClick={handleConnexion}
-            onMouseEnter={() => setIsHoveredConnexion(true)}
-            onMouseLeave={() => setIsHoveredConnexion(false)}
-            style={{
-              padding: '12px 16px',
-              backgroundColor: isHoveredConnexion ? '#1976D2' : '#fff',
-              color: isHoveredConnexion ? '#fff' : '#212121',
-              fontSize: '1rem',
-              border: '1px solid #1976D2',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s, color 0.3s',
-              marginLeft: '10px',
-            }}
-          >
-            Connexion
-          </button>
+          <BasicModal/>
           <button
             onClick={handleUrgence}
             onMouseEnter={() => setIsHoveredUrgence(true)}

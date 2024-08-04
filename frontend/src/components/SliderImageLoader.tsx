@@ -45,7 +45,7 @@ const ImageLoader: React.FC<ImageLoaderProps> = ({ src, alt }) => {
     <img
       src={imageSrc || ''}
       alt={alt}
-      style={{ maxWidth: '100%', height: 'auto' }} 
+      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} 
     />
   );
 };

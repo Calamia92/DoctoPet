@@ -14,8 +14,10 @@ import SuiviIcon from '../assets/suiviIcon.jpg';
 import FormationIcon from '../assets/formationIcon.jpg';
 import ConfianceIcon from '../assets/confianceIcon.jpg';
 import TopHeader from './TopHeader';
+import Footer from './Footer';
 import AnimalSlider from './Slider';
 import IndividualIntervalsExample from './IndividualIntervalsExample';
+
 
 
 const HomePage: React.FC = () => {
@@ -26,7 +28,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const fetchLogos = async () => {
             try {
-                const response = await fetch('./assets/SliderPics/animalPics.json');
+                const response = await fetch('/assets/SliderPics/animalPics.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -34,7 +36,7 @@ const HomePage: React.FC = () => {
                 
                 // Construct image URLs
                 const logoUrls = logoFiles.map(file => ({
-                    src: `./assets/SliderPics/${file}`,
+                    src: `/assets/SliderPics/${file}`,
                     alt: file.replace(/\.[^/.]+$/, '')
                 }));
 
@@ -161,10 +163,14 @@ const HomePage: React.FC = () => {
                 </Box>
             </Box>
             {/* <Box className="dummyBox"></Box> */}
-            <Box className="carousel">
-                <IndividualIntervalsExample />
+            <Box className="carouselContainer">
+                <h2>Ils Témoignent</h2>
+                <Box className="carousel">
+                    <IndividualIntervalsExample />
+                </Box>
             </Box>
             <Box className="dummyBox"></Box>
+            <Footer/>
         </div>
     );
 }

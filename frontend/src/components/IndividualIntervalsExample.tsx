@@ -8,9 +8,6 @@ import Testimony3 from '../assets/temoin3.jpg';
 const IndividualIntervalsExample: React.FC = () => {
 
     const carouselStyle: React.CSSProperties = {
-        // display: 'flex',
-        // justifyContent: 'center',
-        // alignItems: 'center',
         width: '70%',
         height: '200px',
         paddingLeft: '10%',
