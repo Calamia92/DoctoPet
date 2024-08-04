@@ -25,9 +25,16 @@ const Login: React.FC = () => {
                 email,
                 password,
             });
+
             console.log('User logged in:', response.data);
+
+            if (!response.data.userId) {
+                throw new Error("User ID is not returned from the server.");
+            }
+
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('role', response.data.role);
+            localStorage.setItem('userId', response.data.userId);  
 
             if (response.data.role === 'admin') {
                 navigate('/admin-dashboard');
