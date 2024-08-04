@@ -51,7 +51,7 @@ const Login: React.FC<LoginProps> = ({ marginTop = '30vh', toggleForm }) => {
             if (response.data.role === 'admin') {
                 navigate('/admin-dashboard');
             } else {
-                navigate('/');
+                navigate("/profile");
             }
         } catch (error) {
             console.error('Login error:', error);

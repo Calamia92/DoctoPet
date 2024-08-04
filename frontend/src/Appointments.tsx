@@ -21,11 +21,10 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// Define interfaces for Appointment, Cabinet, and Animal
 interface Appointment {
   id: string;
-  status: string;  // Animal Name
-  name: string;    // Doctor Name
+  status: string;  
+  name: string;    
   reason: string;
   date: string;
 }
@@ -60,7 +59,6 @@ const AppointmentComponent: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch appointments, cabinets, and animals simultaneously
         const [appointmentResponse, cabinetResponse, animalResponse] = await Promise.all([
           axios.get('http://localhost:3000/appointments', {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -116,7 +114,6 @@ const AppointmentComponent: React.FC = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Make sure the userId is included
       if (!formData.userId) {
         setError('User ID not found. Please log in again.');
         return;
@@ -167,11 +164,10 @@ const AppointmentComponent: React.FC = () => {
         </Grid>
         <Divider style={{ margin: '16px 0' }} />
         <form onSubmit={handleFormSubmit}>
-          {/* Animal Selection */}
           <TextField
             select
             label="Animal"
-            name="status"  // Assuming 'status' is used to store the animal name
+            name="status"  
             value={formData.status}
             onChange={handleInputChange}
             variant="outlined"
@@ -185,11 +181,10 @@ const AppointmentComponent: React.FC = () => {
             ))}
           </TextField>
           
-          {/* Doctor Selection */}
           <TextField
             select
             label="Nom du Médecin"
-            name="name"  // Assuming 'name' is used to store the doctor's name
+            name="name" 
             value={formData.name}
             onChange={handleInputChange}
             variant="outlined"
@@ -203,7 +198,6 @@ const AppointmentComponent: React.FC = () => {
             ))}
           </TextField>
 
-          {/* Reason Input */}
           <TextField
             label="Motif"
             name="reason"
@@ -214,7 +208,6 @@ const AppointmentComponent: React.FC = () => {
             margin="normal"
           />
 
-          {/* Date Picker */}
           <DatePicker
             selected={formData.date}
             onChange={(date: Date | null) => handleDateChange(date)}
@@ -229,7 +222,6 @@ const AppointmentComponent: React.FC = () => {
             }
           />
 
-          {/* Submit Button */}
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Ajouter le rendez-vous
           </Button>
@@ -237,13 +229,11 @@ const AppointmentComponent: React.FC = () => {
 
         <Divider style={{ margin: '16px 0' }} />
 
-        {/* Loading State */}
         {loading ? (
           <Box display="flex" justifyContent="center">
             <CircularProgress />
           </Box>
         ) : error ? (
-          // Error State
           <Box
             display="flex"
             alignItems="center"
@@ -258,11 +248,10 @@ const AppointmentComponent: React.FC = () => {
             <Typography color="error">{error}</Typography>
           </Box>
         ) : appointments.length > 0 ? (
-          // Appointments List
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Animal</TableCell> {/* Changed from Status */}
+                <TableCell>Animal</TableCell> 
                 <TableCell>Nom du Spécialiste</TableCell>
                 <TableCell>Motif</TableCell>
                 <TableCell>Date</TableCell>
@@ -272,7 +261,7 @@ const AppointmentComponent: React.FC = () => {
             <TableBody>
               {appointments.map((appointment) => (
                 <TableRow key={appointment.id}>
-                  <TableCell>{appointment.status}</TableCell> {/* Assuming status holds animal name */}
+                  <TableCell>{appointment.status}</TableCell> 
                   <TableCell>{appointment.name}</TableCell>
                   <TableCell>{appointment.reason}</TableCell>
                   <TableCell>{appointment.date}</TableCell>
@@ -290,7 +279,6 @@ const AppointmentComponent: React.FC = () => {
             </TableBody>
           </Table>
         ) : (
-          // No Appointments State
           <Box
             display="flex"
             alignItems="center"
