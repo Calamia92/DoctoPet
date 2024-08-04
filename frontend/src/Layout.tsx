@@ -142,7 +142,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             >
             <MenuIcon />
           </IconButton>
-          <Avatar src="../public/assets/logo.png" alt="Logo" sx={{ height: 40, width: 40, marginRight: 2 }} />
+          <Avatar src="./assets/dog.jpeg" alt="Logo" sx={{ height: 40, width: 40, marginRight: 2 }} />
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             DoctoPet
           </Typography>
@@ -181,7 +181,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <List>
           <ListItem button component={Link} to="/">
             <ListItemIcon>
-              <HomeRoundedIcon />
+              <HomeIcon />  
             </ListItemIcon>
             <ListItemText primary="Accueil" />
           </ListItem>
