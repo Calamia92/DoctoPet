@@ -72,7 +72,7 @@ const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Welcome to FilesHub Backend');
+  res.send('Welcome to DoctoPet Backend');
 });
 
 interface Utilisateur {
@@ -80,7 +80,7 @@ interface Utilisateur {
   prenom: string;
   email: string;
   password: string;
-  isAdmin?: boolean; 
+  isAdmin?: boolean;
 }
 
 interface Animal {
@@ -94,6 +94,44 @@ interface Cabinet {
   adresse: string;
   userIds: string[];
 }
+
+interface Appointment {
+  status: string;
+  name: string;
+  reason: string;
+  date: string;
+  userId: string;
+}
+
+app.get('/utilisateurs/me', verifyToken, (req: Request, res: Response) => {
+  const userId = req.body.userId;
+
+  db.ref('utilisateurs/' + userId).once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      res.status(200).send(snapshot.val());
+    } else {
+      res.status(404).send({ message: 'User not found' });
+    }
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching user', error });
+  });
+});
+
+app.put('/utilisateurs/me', verifyToken, async (req: Request, res: Response) => {
+  const { nom, prenom, email }: Partial<Utilisateur> = req.body;
+  const userId = req.body.userId;
+
+  try {
+    await db.ref('utilisateurs/' + userId).update({
+      nom,
+      prenom,
+      email
+    });
+    res.status(200).send({ id: userId, nom, prenom, email });
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating profile', error });
+  }
+});
 
 app.post('/utilisateurs', async (req: Request, res: Response) => {
   const { nom, prenom, email, password, isAdmin = false }: Utilisateur = req.body;
@@ -111,40 +149,57 @@ app.post('/utilisateurs', async (req: Request, res: Response) => {
   res.status(201).send({ id: newUserRef.key, nom, prenom, email, isAdmin });
 });
 
-app.get('/utilisateurs', (req: Request, res: Response) => {
+app.get('/utilisateurs', verifyAdmin, (req: Request, res: Response) => {
   db.ref('utilisateurs').once('value', (snapshot) => {
     res.status(200).send(snapshot.val());
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching users', error });
   });
 });
 
-app.get('/utilisateurs/:id', (req: Request, res: Response) => {
+app.get('/utilisateurs/:id', verifyAdmin, (req: Request, res: Response) => {
   db.ref('utilisateurs/' + req.params.id).once('value', (snapshot) => {
-    res.status(200).send(snapshot.val());
+    if (snapshot.exists()) {
+      res.status(200).send(snapshot.val());
+    } else {
+      res.status(404).send({ message: 'User not found' });
+    }
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching user', error });
   });
 });
 
-app.put('/utilisateurs/:id', async (req: Request, res: Response) => {
+app.put('/utilisateurs/:id', verifyAdmin, async (req: Request, res: Response) => {
   const { nom, prenom, email, password, isAdmin = false }: Utilisateur = req.body;
   const hashedPassword = bcrypt.hashSync(password, 8);
 
-  await db.ref('utilisateurs/' + req.params.id).update({
-    nom,
-    prenom,
-    email,
-    password: hashedPassword,
-    isAdmin
-  });
+  try {
+    await db.ref('utilisateurs/' + req.params.id).update({
+      nom,
+      prenom,
+      email,
+      password: hashedPassword,
+      isAdmin
+    });
 
-  res.status(200).send({ id: req.params.id, nom, prenom, email, isAdmin });
+    res.status(200).send({ id: req.params.id, nom, prenom, email, isAdmin });
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating user', error });
+  }
 });
 
-app.delete('/utilisateurs/:id', async (req: Request, res: Response) => {
-  await db.ref('utilisateurs/' + req.params.id).remove();
-  res.status(200).send({ id: req.params.id });
+app.delete('/utilisateurs/:id', verifyAdmin, async (req: Request, res: Response) => {
+  try {
+    await db.ref('utilisateurs/' + req.params.id).remove();
+    res.status(200).send({ id: req.params.id });
+  } catch (error) {
+    res.status(500).send({ message: 'Error deleting user', error });
+  }
 });
 
-app.post('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => {
-  const { nom, type, proprietaireId }: Animal = req.body;
+app.post('/animaux', verifyToken, (req: Request, res: Response) => {
+  const { nom, type }: Animal = req.body;
+  const proprietaireId = req.body.userId; 
 
   const newAnimalRef = db.ref('animaux').push();
   newAnimalRef.set({
@@ -160,23 +215,33 @@ app.post('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => 
   });
 });
 
-app.get('/animaux', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.get('/animaux', verifyToken, (req: Request, res: Response) => {
   db.ref('animaux').once('value', (snapshot) => {
-    res.status(200).send(snapshot.val());
+    const animals = snapshot.val();
+    const userId = req.body.userId;
+    const userAnimals = Object.entries(animals || {})
+      .filter(([key, animal]: [string, any]) => animal.proprietaireId === userId)
+      .map(([key, animal]: [string, any]) => ({ id: key, ...animal }));
+
+    res.status(200).send(userAnimals);
   }, (error) => {
     res.status(500).send({ message: 'Error fetching animals', error });
   });
 });
 
-app.get('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.get('/animaux/:id', verifyToken, (req: Request, res: Response) => {
   db.ref('animaux/' + req.params.id).once('value', (snapshot) => {
-    res.status(200).send(snapshot.val());
+    if (snapshot.exists()) {
+      res.status(200).send(snapshot.val());
+    } else {
+      res.status(404).send({ message: 'Animal not found' });
+    }
   }, (error) => {
     res.status(500).send({ message: 'Error fetching animal', error });
   });
 });
 
-app.put('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.put('/animaux/:id', verifyToken, (req: Request, res: Response) => {
   const { nom, type, proprietaireId }: Animal = req.body;
 
   db.ref('animaux/' + req.params.id).update({
@@ -192,7 +257,7 @@ app.put('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) 
   });
 });
 
-app.delete('/animaux/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.delete('/animaux/:id', verifyToken, (req: Request, res: Response) => {
   db.ref('animaux/' + req.params.id).remove((error) => {
     if (error) {
       res.status(500).send({ message: 'Error deleting animal', error });
@@ -227,77 +292,170 @@ app.post('/cabinets', verifyToken, verifyAdmin, (req: Request, res: Response) =>
   res.status(201).send({ id: newCabinetRef.key, nom, adresse, userIds });
 });
 
-app.get('/cabinets', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.get('/cabinets', verifyToken, (req: Request, res: Response) => {
   db.ref('cabinets').once('value', (snapshot) => {
-    res.status(200).send(snapshot.val());
+    const cabinets = snapshot.val();
+    const cabinetList = Object.entries(cabinets || {})
+      .map(([key, cabinet]: [string, any]) => ({ id: key, ...cabinet }));
+
+    res.status(200).send(cabinetList);
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching cabinets', error });
   });
 });
 
-app.get('/cabinets/:id', verifyToken, verifyAdmin, (req: Request, res: Response) => {
+app.get('/cabinets/:id', verifyToken, (req: Request, res: Response) => {
   db.ref('cabinets/' + req.params.id).once('value', (snapshot) => {
-    res.status(200).send(snapshot.val());
+    if (snapshot.exists()) {
+      res.status(200).send(snapshot.val());
+    } else {
+      res.status(404).send({ message: 'Cabinet not found' });
+    }
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching cabinet', error });
   });
 });
 
 app.put('/cabinets/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
   const { nom, adresse, userIds }: Cabinet = req.body;
 
-  await db.ref('cabinets/' + req.params.id).update({
-    nom,
-    adresse,
-    userIds
-  });
+  try {
+    await db.ref('cabinets/' + req.params.id).update({
+      nom,
+      adresse,
+      userIds
+    });
 
-  const cabinetRef = db.ref('cabinets/' + req.params.id);
-  const cabinetSnapshot = await cabinetRef.once('value');
-  const cabinetData = cabinetSnapshot.val();
+    const cabinetRef = db.ref('cabinets/' + req.params.id);
+    const cabinetSnapshot = await cabinetRef.once('value');
+    const cabinetData = cabinetSnapshot.val();
 
-  cabinetData.userIds.forEach(async (userId: string) => {
-    const userRef = db.ref('utilisateurs/' + userId);
-    const snapshot = await userRef.once('value');
-    const userData = snapshot.val();
+    cabinetData.userIds.forEach(async (userId: string) => {
+      const userRef = db.ref('utilisateurs/' + userId);
+      const snapshot = await userRef.once('value');
+      const userData = snapshot.val();
 
-    if (userData) {
-      const cabinetIds = userData.cabinetIds || [];
-      const updatedCabinetIds = cabinetIds.filter((id: string) => id !== req.params.id);
-      await userRef.update({ cabinetIds: updatedCabinetIds });
-    }
-  });
+      if (userData) {
+        const cabinetIds = userData.cabinetIds || [];
+        const updatedCabinetIds = cabinetIds.filter((id: string) => id !== req.params.id);
+        await userRef.update({ cabinetIds: updatedCabinetIds });
+      }
+    });
 
-  userIds.forEach(async (userId) => {
-    const userRef = db.ref('utilisateurs/' + userId);
-    const snapshot = await userRef.once('value');
-    const userData = snapshot.val();
+    userIds.forEach(async (userId) => {
+      const userRef = db.ref('utilisateurs/' + userId);
+      const snapshot = await userRef.once('value');
+      const userData = snapshot.val();
 
-    if (userData) {
-      const cabinetIds = userData.cabinetIds || [];
-      cabinetIds.push(req.params.id);
-      await userRef.update({ cabinetIds });
-    }
-  });
+      if (userData) {
+        const cabinetIds = userData.cabinetIds || [];
+        cabinetIds.push(req.params.id);
+        await userRef.update({ cabinetIds });
+      }
+    });
 
-  res.status(200).send({ id: req.params.id, nom, adresse, userIds });
+    res.status(200).send({ id: req.params.id, nom, adresse, userIds });
+  } catch (error) {
+    res.status(500).send({ message: 'Error updating cabinet', error });
+  }
 });
 
 app.delete('/cabinets/:id', verifyToken, verifyAdmin, async (req: Request, res: Response) => {
-  const cabinetRef = db.ref('cabinets/' + req.params.id);
-  const cabinetSnapshot = await cabinetRef.once('value');
-  const cabinetData = cabinetSnapshot.val();
+  try {
+    const cabinetRef = db.ref('cabinets/' + req.params.id);
+    const cabinetSnapshot = await cabinetRef.once('value');
+    const cabinetData = cabinetSnapshot.val();
 
-  cabinetData.userIds.forEach(async (userId: string) => {
-    const userRef = db.ref('utilisateurs/' + userId);
-    const snapshot = await userRef.once('value');
-    const userData = snapshot.val();
+    cabinetData.userIds.forEach(async (userId: string) => {
+      const userRef = db.ref('utilisateurs/' + userId);
+      const snapshot = await userRef.once('value');
+      const userData = snapshot.val();
 
-    if (userData) {
-      const cabinetIds = userData.cabinetIds || [];
-      const updatedCabinetIds = cabinetIds.filter((id: string) => id !== req.params.id);
-      await userRef.update({ cabinetIds: updatedCabinetIds });
+      if (userData) {
+        const cabinetIds = userData.cabinetIds || [];
+        const updatedCabinetIds = cabinetIds.filter((id: string) => id !== req.params.id);
+        await userRef.update({ cabinetIds: updatedCabinetIds });
+      }
+    });
+
+    await db.ref('cabinets/' + req.params.id).remove();
+    res.status(200).send({ id: req.params.id });
+  } catch (error) {
+    res.status(500).send({ message: 'Error deleting cabinet', error });
+  }
+});
+
+app.post('/appointments', verifyToken, (req: Request, res: Response) => {
+  const { status, name, reason, date, userId }: Appointment = req.body;
+
+  const newAppointmentRef = db.ref('appointments').push();
+  newAppointmentRef.set({
+    status,
+    name,
+    reason,
+    date,
+    userId
+  }, (error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error creating appointment', error });
+    } else {
+      res.status(201).send({ id: newAppointmentRef.key, status, name, reason, date, userId });
     }
   });
+});
 
-  await db.ref('cabinets/' + req.params.id).remove();
-  res.status(200).send({ id: req.params.id });
+app.get('/appointments', verifyToken, (req: Request, res: Response) => {
+  db.ref('appointments').once('value', (snapshot) => {
+    const appointments = snapshot.val();
+    const userId = req.body.userId;
+    const userAppointments = Object.entries(appointments || {})
+      .filter(([key, appointment]: [string, any]) => appointment.userId === userId)
+      .map(([key, appointment]: [string, any]) => ({ id: key, ...appointment }));
+
+    res.status(200).send(userAppointments);
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching appointments', error });
+  });
+});
+
+app.get('/appointments/:id', verifyToken, (req: Request, res: Response) => {
+  db.ref('appointments/' + req.params.id).once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      res.status(200).send(snapshot.val());
+    } else {
+      res.status(404).send({ message: 'Appointment not found' });
+    }
+  }, (error) => {
+    res.status(500).send({ message: 'Error fetching appointment', error });
+  });
+});
+
+app.put('/appointments/:id', verifyToken, (req: Request, res: Response) => {
+  const { status, name, reason, date, userId }: Appointment = req.body;
+
+  db.ref('appointments/' + req.params.id).update({
+    status,
+    name,
+    reason,
+    date,
+    userId
+  }, (error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error updating appointment', error });
+    } else {
+      res.status(200).send({ id: req.params.id, status, name, reason, date, userId });
+    }
+  });
+});
+
+app.delete('/appointments/:id', verifyToken, (req: Request, res: Response) => {
+  db.ref('appointments/' + req.params.id).remove((error) => {
+    if (error) {
+      res.status(500).send({ message: 'Error deleting appointment', error });
+    } else {
+      res.status(200).send({ id: req.params.id });
+    }
+  });
 });
 
 app.post('/login', (req: Request, res: Response) => {
@@ -312,7 +470,7 @@ app.post('/login', (req: Request, res: Response) => {
 
       if (passwordIsValid) {
         const token = jwt.sign({ id: userId }, process.env.SECRET_KEY as string, {
-          expiresIn: 86400 
+          expiresIn: 86400 // 24 hours
         });
         const role = user.isAdmin ? 'admin' : 'user';
         res.status(200).send({ auth: true, token: token, role: role });
@@ -327,7 +485,6 @@ app.post('/login', (req: Request, res: Response) => {
   });
 });
 
-
 app.post('/admin-dashboard', (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -340,7 +497,7 @@ app.post('/admin-dashboard', (req: Request, res: Response) => {
 
       if (passwordIsValid && user.isAdmin) {
         const token = jwt.sign({ id: userId, isAdmin: true }, process.env.SECRET_KEY as string, {
-          expiresIn: 86400 
+          expiresIn: 86400 // 24 hours
         });
         res.status(200).send({ auth: true, token: token });
       } else {
