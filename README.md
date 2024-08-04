@@ -1,4 +1,3 @@
-Sure! Here's a more straightforward version of the README that focuses on the basic setup and usage instructions for your project.
 
 ---
 
